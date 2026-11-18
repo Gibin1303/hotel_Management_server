@@ -12,6 +12,7 @@ export const register = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: isProduction,
     sameSite: isProduction ? "none" : "lax",
+    partitioned: true,
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 Days
   });
 
@@ -68,6 +69,7 @@ export const login = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: isProduction,
     sameSite: isProduction ? "none" : "lax",
+    partitioned: true,
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 

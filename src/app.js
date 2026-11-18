@@ -12,6 +12,8 @@ const app = express();
 
 // middleware
 
+app.set("trust proxy", 1);
+
 app.use(
   cors({
     origin: [
