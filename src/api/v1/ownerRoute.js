@@ -8,9 +8,9 @@ import {
   deleteOwnerHotelController,
 } from "../../modules/hotel/owner/hotelController.js";
 
-import { authMiddleware } from "../../../../backend/src/middleware/auth.middleware.js";
+import { authMiddleware } from "../../middleware/auth.middleware.js";
 
-import { authorize } from "../../../../backend/src/middleware/role.middleware.js";
+import { authorize } from "../../middleware/role.middleware.js";
 import { upload } from "../../modules/hotel/upload.js";
 import {
   createRoomController,
