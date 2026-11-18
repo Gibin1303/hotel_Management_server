@@ -39,8 +39,8 @@ let redis = null;
 
 const redisUrl =
   process.env.NODE_ENV === "development"
-    ? process.env.REDIS_URL
-    : process.env.REDIS_URL_PROD;
+    ? process.env.REDIS_URL_PROD
+    : process.env.REDIS_URL;
 
 if (redisUrl) {
   const isTls = redisUrl.startsWith("rediss://");
