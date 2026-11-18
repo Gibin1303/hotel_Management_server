@@ -38,7 +38,7 @@ dotenv.config();
 let redis = null;
 
 const redisUrl =
-  process.env.NODE_ENV === "development"
+  process.env.NODE_ENV === "production"
     ? process.env.REDIS_URL_PROD
     : process.env.REDIS_URL;
 
