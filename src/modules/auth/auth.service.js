@@ -24,7 +24,6 @@ import { generateToken } from "../../utils/jwt.js";
 import jwt from "jsonwebtoken";
 
 export const registerUser = async (data) => {
-  
   const existingUser = await findUserByEmail(data.email);
 
   if (existingUser) {
@@ -172,12 +171,11 @@ export const loginUser = async (data) => {
 };
 
 export const refreshAccessToken = async (refreshToken) => {
-  console.log(refreshAccessToken, "refershAccessToken");
-  
+  console.log(refreshToken, "refershAccessToken");
+
   const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-
-  const storedToken = await redis.get(`refresh:${decoded.id}`);
-
+  const userId = decoded.id || decoded._id || decoded.userId;
+  const storedToken = await redis.get(`refresh:${userId}`);
 
   if (!storedToken) {
     throw new ApiError(401, "Refresh token expired");
@@ -189,8 +187,8 @@ export const refreshAccessToken = async (refreshToken) => {
     throw new ApiError(401, "Invalid refresh token");
   }
 
-  const user = await findUserById(decoded.id);
-  
+  const user = await findUserById(userId);
+
   const token = generateToken(user);
 
   return {

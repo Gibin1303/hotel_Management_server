@@ -19,9 +19,17 @@ export const authMiddleware = async (req, res, next) => {
 
     const decoded = jwt.verify(accessToken, process.env.JWT_SECRET);
 
+
+
+    const userId = decoded.id || decoded._id || decoded.userId;
+
+    if (!userId) {
+      throw new ApiError(401, "Invalid access token payload");
+    }
+
     // Find user
 
-    const user = await findUserById(decoded.id);
+    const user = await findUserById(userId);
 
     if (!user) {
       throw new ApiError(401, "User not found");

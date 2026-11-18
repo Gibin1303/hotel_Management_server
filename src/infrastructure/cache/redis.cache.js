@@ -30,8 +30,6 @@
 
 // export default redis;
 
-
-
 import Redis from "ioredis";
 import dotenv from "dotenv";
 
@@ -44,34 +42,30 @@ const redisUrl =
     ? process.env.REDIS_URL
     : process.env.REDIS_URL_PROD;
 
-
 if (redisUrl) {
+  const isTls = redisUrl.startsWith("rediss://");
 
   redis = new Redis(redisUrl, {
-
     maxRetriesPerRequest: null,
-
+    tls: isTls ? { rejectUnauthorized: false } : undefined,
     retryStrategy(times) {
       return Math.min(times * 2000, 30000);
     },
 
+    retryStrategy(times) {
+      return Math.min(times * 2000, 30000);
+    },
   });
-
 
   redis.on("connect", () => {
     console.log("Redis Connected", redisUrl);
   });
 
-
   redis.on("error", (error) => {
     console.log("Redis Error:", error.message);
   });
-
 } else {
-
   console.log("Redis disabled");
-
 }
-
 
 export default redis;

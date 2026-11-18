@@ -4,16 +4,14 @@ import { loginUser } from "./auth.service.js";
 import { refreshAccessToken } from "./auth.service.js";
 import ApiError from "../../utils/apiError.js";
 
-
 export const register = asyncHandler(async (req, res) => {
-
   const result = await registerUser(req.body);
   console.log(result, "Registaration dtaa");
-  
-  res.cookie("token", result.token, {
+  const isProduction = process.env.NODE_ENV === "production";
+  res.cookie("refreshToken", result.token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 Days
   });
 
@@ -61,16 +59,15 @@ export const resendOtpController = asyncHandler(async (req, res) => {
 
 export const login = asyncHandler(async (req, res) => {
   // const result = await loginUser(req.body);
-    const {user,token,refreshToken} = await loginUser(req.body);
+  const { user, token, refreshToken } = await loginUser(req.body);
 
-
-    //  res.cookie("refreshToken", result.refreshToken, {
-
+  //  res.cookie("refreshToken", result.refreshToken, {
+  const isProduction = process.env.NODE_ENV === "production";
 
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
-    secure: false,
-    sameSite: "strict",
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
@@ -81,47 +78,23 @@ export const login = asyncHandler(async (req, res) => {
       // user: result.user,
       // token:result.token
       user,
-      token
+      token,
     },
   });
 });
 
+export const refreshTokenController = asyncHandler(async (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
 
+  if (!refreshToken) {
+    throw new ApiError(401, "Refresh token missing");
+  }
 
+  const result = await refreshAccessToken(refreshToken);
 
+  res.status(200).json({
+    success: true,
 
-
-export const refreshTokenController = asyncHandler(
-async (req, res) => {
-
-
-    const refreshToken =
-        req.cookies.refreshToken;
-
-
-
-    if (!refreshToken) {
-
-        throw new ApiError(
-            401,
-            "Refresh token missing"
-        );
-
-    }
-
-
-    const result =
-        await refreshAccessToken(refreshToken);
-
-
-
-    res.status(200).json({
-
-        success:true,
-
-        data:result
-
-    });
-
-
+    data: result,
+  });
 });
